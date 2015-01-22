@@ -39,22 +39,6 @@ function createPageLinks (xhr) {
     }
 }
 
-function showSearchResults (obj) {
-    // CREATE OBJECT FOR obj.items TO DISPLAY THE items.full_name
-    var results = document.querySelector('#results')
-
-    for (var i = 0, len = obj.items.length; i < len; i++) {
-        var fullName = obj.items[i].full_name;
-        console.log(fullName);
-
-        var div = document.createElement('div');
-        div.innerHTML = fullName;
-
-        results.appendChild(div);
-    }
-
-
-}
 
 function extractLinkObject (str) {
     // todo: change to cut out previous and first
@@ -76,4 +60,52 @@ function extractLinkObject (str) {
         linkObject[key] = linkValue;
     }
     return linkObject;
+}
+
+
+
+function showSearchResults (obj) {
+    // CREATE OBJECT FOR obj.items TO DISPLAY THE items.full_name
+    var results = document.querySelector('#results')
+
+    for (var i = 0, len = obj.items.length; i < len; i++) {
+        var item = obj.items[i];
+        var owner = {};
+        var li = document.createElement('li');
+
+        var divFullName = document.createElement('div');
+        divFullName.className = 'divFullName';
+        var divDescription = document.createElement('div');
+        divDescription.className = 'divDescription';
+        var divCloneURL = document.createElement('div');
+        divCloneURL.className = 'divCloneURL';
+        var divHtmlURL = document.createElement('div');
+        divHtmlURL.className = 'divHtmlURL';
+        var divOwnerLogin = document.createElement('div');
+        divOwnerLogin.className = 'divOwnerLogin';
+
+        var fullName = item.full_name;                 //        console.log(fullName);
+        var description = item.description;
+        var cloneURL = item.clone_url;
+        var htmlURL = item.html_url;
+        owner = item.owner;
+        var ownerLogin = owner['login'];
+
+
+        console.log('FULLNAME: ',fullName,', OWNERLOGIN: ',ownerLogin,', DESCRIPTION: ',description,', CLONEURL: ',cloneURL);
+
+        divFullName.innerHTML = fullName;
+        divDescription.innerHTML = description;
+        divCloneURL.innerHTML = cloneURL;
+        divHtmlURL.innerHTML = htmlURL;
+        divOwnerLogin.innerHTML = ownerLogin;
+
+        li.appendChild(divFullName);
+        li.appendChild(divDescription);
+        li.appendChild(divCloneURL);
+        li.appendChild(divHtmlURL);
+        li.appendChild(divOwnerLogin);
+
+        results.appendChild(li);
+    }
 }

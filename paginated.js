@@ -84,16 +84,20 @@ function createPageLinks (xhr) {
    div.innerHTML = ' ';
 
     for (var prop in link) {
-        console.log('LINK[PROP=',prop,']: ', link[prop]);
+        console.log('LINK[PROP=', prop, ']: ', link[prop]);
         var anchor = document.createElement('a');
         anchor.href = link[prop];                            // http://api.github......
         anchor.className = 'naviAnchors';
         anchor.innerHTML = prop;                             // next, last, previous, first
         var anchorId = prop + 'anchor';
-        if(prop === 'first' || prop === 'prev') {
-            console.log('inserting ', prop,'as first child');
+        anchor.id = anchorId;
+        if (prop === 'first') {
+            console.log('inserting ', prop, 'as first child');
             var firstChild = div.firstElementChild;
-            div.insertBefore(anchor,firstChild);
+            div.insertBefore(anchor, firstChild);
+        } else if(prop === 'prev') {
+            var next = document.getElementById('nextanchor');
+            div.insertBefore(anchor, next);
         } else {
             div.appendChild(anchor);
         }

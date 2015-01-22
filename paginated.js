@@ -6,7 +6,47 @@ document.addEventListener('DOMContentLoaded',function() {
         console.log('USER ENTERED SEARCH: ', this.value);
         searchForThisRepository(this.value);
     });
+
+    //addClickToNavi();
+
 });
+
+
+function addClickToNavi() {
+    var navis = document.getElementsByClassName('naviAnchors');   // navis is a live HTMLCollection ---> NODELIST, not ARRAY!
+    if (navis !== null) {
+        for (var i = 0, len = navis.length; i < len; i++) {
+            var anchor = navis[i];
+            console.log(anchor);
+            var page = anchor.innerHTML;
+            var newQueryURL = anchor.href;
+            console.log('ADDING EVENT LISTENER FOR: ',page);
+            anchor.addEventListener('click', turnThePage(page,newQueryURL));
+        }
+    } else {
+        console.log('navis are null! ',navis);
+    }
+}
+
+function turnThePage (page, queryUrl){
+    console.log('USER CLICKED: ', page);
+    console.log('making a new query for: ', queryUrl);
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET',queryUrl);
+    xhr.addEventListener('readystatechange', function () {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            console.log('XHR: ', xhr);
+            createPageLinks(xhr);
+            var objJSON = parse(xhr.responseText);
+            // todo: DO I NEED TO ERASE the previous search results
+            console.log('showing search resuls for new page');
+            showSearchResults(objJSON);
+        }
+    });
+
+}
+
+
 
 function searchForThisRepository (searchTerm) {
 
@@ -33,10 +73,14 @@ function createPageLinks (xhr) {
         console.log('LINK[PROP=',prop,']: ', link[prop]);
         var anchor = document.createElement('a');
         anchor.href = link[prop];                            // http://api.github......
+        anchor.className = 'naviAnchors';
         anchor.innerHTML = prop;                             // next, last, previous, first
         var anchorId = prop + 'anchor';
         div.appendChild(anchor);
     }
+
+   // addClickToNavi();
+
 }
 
 
@@ -100,11 +144,16 @@ function showSearchResults (obj) {
         divHtmlURL.innerHTML = htmlURL;
         divOwnerLogin.innerHTML = ownerLogin;
 
+        divDescription.style.display = 'none';
+        divCloneURL.style.display = 'none';
+        divHtmlURL.style.display = 'none';
+        divOwnerLogin.style.display = 'none';
+
         li.appendChild(divFullName);
-        li.appendChild(divDescription);
+        li.appendChild(divDescription);   // these are initially invisibly
         li.appendChild(divCloneURL);
         li.appendChild(divHtmlURL);
-        li.appendChild(divOwnerLogin);
+        li.appendChild(divOwnerLogin);  // todo: add check boxes to be able to display these things
 
         results.appendChild(li);
     }

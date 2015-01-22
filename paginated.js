@@ -18,7 +18,7 @@ function searchForThisRepository (searchTerm) {
         if(xhr.readyState === 4 && xhr.status === 200) {
             createPageLinks(xhr);
             var objJSON = JSON.parse(xhr.responseText);
-            showSearchResults(objJSON);
+            showSearchResults(objJSON,false);
         }
     });
     console.log('SENDING XHR REQUEST');
@@ -44,7 +44,7 @@ function addClickToNavi() {
                 var objJSON = JSON.parse(xhr.responseText);
                 // todo: DO I NEED TO ERASE the previous search results
                 console.log('showing search resuls for new page');
-                showSearchResults(objJSON);
+                showSearchResults(objJSON,true);
             }
         });
         console.log('SENDING XHR REQUEST FOR: newQueryURL');
@@ -82,6 +82,7 @@ function createPageLinks (xhr) {
     var div = document.querySelector('.navigation');
 
    div.innerHTML = ' ';
+
     for (var prop in link) {
         console.log('LINK[PROP=',prop,']: ', link[prop]);
         var anchor = document.createElement('a');
@@ -89,7 +90,13 @@ function createPageLinks (xhr) {
         anchor.className = 'naviAnchors';
         anchor.innerHTML = prop;                             // next, last, previous, first
         var anchorId = prop + 'anchor';
-        div.appendChild(anchor);
+        if(prop === 'first' || prop === 'prev') {
+            console.log('inserting ', prop,'as first child');
+            var firstChild = div.firstElementChild;
+            div.insertBefore(anchor,firstChild);
+        } else {
+            div.appendChild(anchor);
+        }
     }
 
    addClickToNavi();
@@ -121,9 +128,10 @@ function extractLinkObject (str) {
 
 
 
-function showSearchResults (obj) {
+function showSearchResults (obj,rewrite) {
     // CREATE OBJECT FOR obj.items TO DISPLAY THE items.full_name
-    var results = document.querySelector('#results')
+    var results = document.querySelector('#results');
+    var count = 0;
 
     for (var i = 0, len = obj.items.length; i < len; i++) {
         var item = obj.items[i];
@@ -172,6 +180,25 @@ function showSearchResults (obj) {
         li.appendChild(divHtmlURL);
         li.appendChild(divOwnerLogin);  // todo: add check boxes to be able to display these things
 
-        results.appendChild(li);
+       if (rewrite === false) {
+           results.appendChild(li);
+       } else if (rewrite === true) {
+           count = count + 1;
+           console.log('INSERTING BEFORE');
+           if (count <= 1 ) {
+               console.log(count);
+               var prevResultsLi = results.firstElementChild;
+               var pageDiv = document.createElement('li');
+               pageDiv.id = 'pageDiveLiSeparator';
+               pageDiv.innerHTML = 'Past Search';
+               console.log(pageDiv.innerHTML);
+               results.insertBefore(pageDiv, prevResultsLi);
+               results.insertBefore(li, pageDiv);
+           } else {
+               console.log(count);
+               var prevResultsLi = results.firstElementChild;
+               results.insertBefore(li,prevResultsLi);
+           }
+        }
     }
 }

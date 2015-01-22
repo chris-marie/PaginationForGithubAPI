@@ -11,58 +11,6 @@ document.addEventListener('DOMContentLoaded',function() {
 
 });
 
-
-function addClickToNavi() {
-    console.log('***CALLED addClickToNavi ');
-    var navis = document.getElementsByClassName('naviAnchors');   // navis is a live HTMLCollection ---> NODELIST, not ARRAY!
-
-
-
-    function turnThePage (page,newQueryURL){
-        console.log('TURNING THE PAGE');
-        console.log('USER CLICKED: ', page);
-        console.log('making a new query for: ', newQueryURL);
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', newQueryURL);
-        console.log('HEEEEEEY',xhr);
-        xhr.addEventListener('readystatechange', function () {
-            console.log('XHR: ', xhr);
-            if(xhr.readyState === 4 && xhr.status === 200) {
-                console.log('XHR: ', xhr);
-                createPageLinks(xhr);
-                var objJSON = parse(xhr.responseText);
-                // todo: DO I NEED TO ERASE the previous search results
-                console.log('showing search resuls for new page');
-                showSearchResults(objJSON);
-            }
-        });
-    }
-
-
-
-    if (navis !== null) {
-        for (var i = 0, len = navis.length; i < len; i++) {
-            var anchor = navis[i];
-            console.log('ANCHOR: ',anchor);
-            var page = anchor.innerHTML;
-            var newQueryURL = anchor.href;
-            console.log('ADDING EVENT LISTENER FOR: ',page);
-            function stopClick(event) {
-                console.log('STOPPING THE CLICK');
-                event.preventDefault();
-                turnThePage(page,newQueryURL);
-            }
-            anchor.addEventListener('click', stopClick,false);
-
-        }
-    } else {
-        console.log('navis are null! ',navis);
-    }
-}
-
-
-
-
 function searchForThisRepository (searchTerm) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://api.github.com/search/repositories?q=' + searchTerm); // todo: add ability to search code, users ect...
@@ -76,6 +24,57 @@ function searchForThisRepository (searchTerm) {
     console.log('SENDING XHR REQUEST');
     xhr.send();
 }
+
+
+function addClickToNavi() {
+    console.log('***CALLED addClickToNavi ');
+    var navis = document.getElementsByClassName('naviAnchors');   // navis is a live HTMLCollection ---> NODELIST, not ARRAY!
+
+    function turnThePage (newQueryURL){
+        console.log('TURNING THE PAGE');
+        console.log('making a new query for: ', newQueryURL);
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', newQueryURL);
+        console.log('HEEEEEEY',xhr);
+        xhr.addEventListener('readystatechange', function () {
+            console.log('XHR: ', xhr);
+            if(xhr.readyState === 4 && xhr.status === 200) {
+                console.log('XHR: ', xhr);
+                createPageLinks(xhr);
+                var objJSON = JSON.parse(xhr.responseText);
+                // todo: DO I NEED TO ERASE the previous search results
+                console.log('showing search resuls for new page');
+                showSearchResults(objJSON);
+            }
+        });
+        console.log('SENDING XHR REQUEST FOR: newQueryURL');
+        xhr.send();
+    }
+    if (navis !== null) {
+        for (var i = 0, len = navis.length; i < len; i++) {
+            var anchor = navis[i];
+            console.log('ANCHOR: ',anchor);
+            var page = anchor.innerHTML;
+            var newQueryURL = anchor.href;
+            console.log('ADDING EVENT LISTENER FOR: ',page);
+            (function(achr, nqURL) {
+                function stopClick(event) {
+                    console.log('STOPPING THE CLICK');
+                    event.preventDefault();
+                    console.log('newQueryURL:', nqURL);
+                    turnThePage(nqURL);  // todo: THIS IS WRONG - I am creating a closure of some kind to that newQueryUrl is stored permanently in turnThePage as the href of last
+                }
+                achr.addEventListener('click', stopClick,false);
+            })(anchor, newQueryURL);
+
+        }
+    } else {
+        console.log('navis are null! ',navis);
+    }
+}
+
+
+
 
 function createPageLinks (xhr) {
     // todo: change to accept PREVIOUS AND FIRST
@@ -149,10 +148,14 @@ function showSearchResults (obj) {
         owner = item.owner;
         var ownerLogin = owner['login'];
 
-
         console.log('FULLNAME: ',fullName,', OWNERLOGIN: ',ownerLogin,', DESCRIPTION: ',description,', CLONEURL: ',cloneURL);
 
-        divFullName.innerHTML = fullName;
+        // divFullName.innerHTML = fullName;
+        var repoa = document.createElement('a');
+        repoa.href = htmlURL;
+        repoa.innerHTML = fullName;
+        divFullName.appendChild(repoa);
+
         divDescription.innerHTML = description;
         divCloneURL.innerHTML = cloneURL;
         divHtmlURL.innerHTML = htmlURL;

@@ -8,42 +8,58 @@
         body, html {
             height: 100%;
         }
-
         input {
             display: block;
             margin: auto;
         }
-
         div.navigation {
             background-color: #eeeeee;
             padding: 1em 1.5em;
             margin: 1em 2em;
             text-align: center;
         }
-
         div.navigation > * {
             padding: 0 4em;
         }
-
         #results {
             border: 1px solid #eeeeee;
             width: 50%;
             padding: 1em;
             margin: 0 auto;
         }
-
         #divDescription, #divCloneURL, #divHtmlURL, #divOwnerLogin {
             display: none;
         }
-
         #pageDiveLiSeparator {
             list-style-type: none;
             font-weight: bold;
             text-align: center;
         }
+        input[type=checkbox] + label {
+            color: #ccc;
+            font-style: italic;
+        }
+        label, input[type=checkbox]{
+            display: inline-block;
+        }
+        input[type=checkbox]:checked + label {
+            color: #f00;
+            font-style: normal;
+        }
+        #optionsList > li{
+            display: inline-block;
+            margin: 0 1.5em;
+        }
+        #optionsList {
+            width: 70%;
+            border: 1px solid #eeeeee;
+            padding: 0.3em;
+            margin: 1em auto;
+        }
 
     </style>
     <script src="paginated.js"></script>
+    <script src="addResultInfo.js"></script>
 </head>
 <body>
 
@@ -52,10 +68,28 @@
 <div class="navigation">
 
 </div>
-<form action="">
 
 
-</form>
+<ul id="optionsList">
+    <li>
+        <input type="checkbox" id="view-description" name="description-check"/>
+        <label for="view-description">Description</label>
+    </li>
+    <li>
+        <input type="checkbox" id="view-clone-url" name="clone-url-check"/>
+        <label for="view-clone-url">Clone URL</label>
+    </li>
+    <li>
+        <input type="checkbox" id="view-html-url" name="html-url-check"/>
+        <label for="view-html-url">Html URL</label>
+    </li>
+    <li>
+        <input type="checkbox" id="view-owner-login" name="owner-login-check"/>
+        <label for="view-owner-login">Owner Login</label>
+    </li>
+</ul>
+
+
 <ul id="results"></ul>
 
 

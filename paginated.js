@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded',function() {
 
 });
 
+// todo: change the searchForThisRepository function, and ALL xhr call so that is can be used for url and search term
+
 function searchForThisRepository (searchTerm) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://api.github.com/search/repositories?q=' + searchTerm); // todo: add ability to search code, users ect...
@@ -77,7 +79,7 @@ function addClickToNavi() {
 
 
 function createPageLinks (xhr) {
-    // todo: change to accept PREVIOUS AND FIRST
+    // todoadd ability to display page numbers
     var link = extractLinkObject(xhr.getAllResponseHeaders());  // GET BACK AN OBJECT WITH LINKS TO NEXT AND LAST PAGE
     var div = document.querySelector('.navigation');
 
